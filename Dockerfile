@@ -15,4 +15,4 @@ WORKDIR /app
 COPY . .
 RUN pip install --no-cache-dir .
 
-ENTRYPOINT ["pdffixlab"]
+ENTRYPOINT ["pdffix"]

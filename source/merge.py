@@ -5,7 +5,7 @@ from typing import Iterable, List
 from pypdf import PdfReader, PdfWriter
 
 
-def merge_pdfs(pdf_paths: Iterable[str | Path], output_pdf: str | Path) -> None:
+def merge(pdf_paths: Iterable[str | Path], output_pdf: str | Path) -> None:
     pdf_paths = [Path(p) for p in pdf_paths]
     output_pdf = Path(output_pdf)
 

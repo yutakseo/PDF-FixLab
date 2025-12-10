@@ -4,7 +4,7 @@ from pathlib import Path
 import ocrmypdf
 
 
-def add_ocr_layer(
+def add_ocr(
     input_pdf: str | Path,
     output_pdf: str | Path,
     lang: str = "kor+eng",

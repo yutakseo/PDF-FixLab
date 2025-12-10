@@ -3,4 +3,5 @@ __all__ = [
     "deskew",
     "ocr_layer",
     "merge",
+    "resize"
 ]
