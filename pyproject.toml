@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pdfFixLab"
+version = "0.1.0"
+description = "A small toolkit for fixing scanned PDFs (rotate, deskew, OCR, merge)."
+authors = [
+  { name = "admin" }
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "pypdf>=5.0.0",
+  "pymupdf>=1.24.0",
+  "opencv-python-headless>=4.10.0.0",
+  "Pillow>=10.0.0",
+  "ocrmypdf>=16.0.0",
+]
+
+[project.scripts]
+pdffixlab = "pdf_fix_lab.cli:main"

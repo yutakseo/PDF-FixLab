@@ -1,0 +1,9 @@
+version: "3.9"
+
+services:
+  pdffixlab:
+    build: .
+    container_name: pdffixlab
+    working_dir: /data
+    volumes:
+      - ./data:/data
