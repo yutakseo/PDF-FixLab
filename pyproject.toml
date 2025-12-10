@@ -20,4 +20,11 @@ dependencies = [
 ]
 
 [project.scripts]
-pdffixlab = "pdf_fix_lab.cli:main"
+
+pdffixlab = "cli:main"
+
+[tool.setuptools]
+
+packages = ["source"]
+
+py-modules = ["cli"]

@@ -1,7 +1,8 @@
 from __future__ import annotations
 import argparse
 
-from . import rotate, deskew, ocr_layer, merge
+from source import rotate, deskew, ocr_layer, merge 
+
 
 
 def main() -> None:
