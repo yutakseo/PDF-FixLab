@@ -1,8 +1,9 @@
 from __future__ import annotations
 from pathlib import Path
-from typing import Literal
+from typing import Literal, List
 
-from pypdf import PdfReader, PdfWriter
+import fitz  # PyMuPDF
+from PIL import Image
 
 
 def rotate(
@@ -14,7 +15,7 @@ def rotate(
     end_page: int | None = None,
 ) -> None:
     """
-    PDF 페이지 회전 유틸리티.
+    스캔 PDF를 실제로 회전(픽셀 레벨)해서 새 PDF로 저장.
 
     Parameters
     ----------
@@ -37,7 +38,9 @@ def rotate(
     -----
     - 페이지 번호는 1부터라고 가정.
     - target 조건(even/odd/all) AND start/end 범위 조건을 동시에 만족하는
-      페이지만 회전한다.
+      페이지만 실제 이미지 회전을 수행한다.
+    - PyMuPDF로 페이지를 이미지로 렌더링 후, Pillow로 회전 → 다시 PDF로 저장하므로
+      벡터 정보는 사라지고 래스터(이미지) PDF가 된다. 스캔본 전용 처리용으로 생각하면 된다.
     """
     input_pdf = Path(input_pdf)
     output_pdf = Path(output_pdf)
@@ -46,10 +49,9 @@ def rotate(
     if degrees % 90 != 0:
         raise ValueError("degrees must be multiple of 90 (e.g. 90, 180, 270, -90)")
 
-    reader = PdfReader(str(input_pdf))
-    writer = PdfWriter()
-
-    num_pages = len(reader.pages)
+    # PyMuPDF로 PDF 열기
+    doc = fitz.open(str(input_pdf))
+    num_pages = len(doc)
 
     # start/end 기본값 보정
     if start_page is None:
@@ -64,7 +66,13 @@ def rotate(
     if start_page > end_page:
         raise ValueError("start_page must be <= end_page")
 
-    for page_num, page in enumerate(reader.pages, start=1):
+    pil_pages: List[Image.Image] = []
+
+    # Pillow는 양수 각도를 "반시계 방향"으로 돌리기 때문에
+    # 시계 방향 degrees를 전달받으면 부호를 반대로 바꿔준다.
+    ccw_angle = -degrees
+
+    for page_num, page in enumerate(doc, start=1):
         # 1) 페이지 범위 조건
         in_range = (start_page <= page_num <= end_page)
 
@@ -78,17 +86,25 @@ def rotate(
         else:
             raise ValueError("target must be 'all', 'even', or 'odd'")
 
-        # 두 조건을 모두 만족하는 페이지만 회전
+        # 페이지를 래스터 이미지로 렌더링 (72dpi 기준, 필요하면 확대 가능)
+        pix = page.get_pixmap(alpha=False)
+        img = Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
+
+        # 실제 회전이 필요한 페이지인지 체크
         if in_range and match_target:
-            page.rotate(degrees)
+            # expand=True로 이미지 캔버스를 새 각도에 맞춰 확장
+            img = img.rotate(ccw_angle, expand=True)
 
-        writer.add_page(page)
+        pil_pages.append(img)
 
-    # 메타데이터 유지
-    if reader.metadata:
-        writer.add_metadata(reader.metadata)
+    doc.close()
 
+    # 출력 경로 생성
+    output_pdf = Path(output_pdf)
     output_pdf.parent.mkdir(parents=True, exist_ok=True)
-    with open(output_pdf, "wb") as f:
-        writer.write(f)
 
+    # 여러 장을 하나의 PDF로 저장
+    first, *rest = pil_pages
+    first.save(str(output_pdf), "PDF", save_all=True, append_images=rest)
+
+    print(f"[DONE] rotated PDF saved to {output_pdf}")
