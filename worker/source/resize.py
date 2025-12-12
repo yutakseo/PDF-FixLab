@@ -72,12 +72,3 @@ def resize(
     dst_doc.save(output_pdf)
     dst_doc.close()
     src_doc.close()
-
-
-# 사용 예시 1) 기본 A4로 리사이즈 (업스케일 X)
-if __name__ == "__main__":
-    resize("input.pdf", "output_a4.pdf")
-
-    # 사용 예시 2) A3 사이즈로 리사이즈 (업스케일 허용)
-    a3_size = fitz.paper_size("a3")
-    resize("input.pdf", "output_a3_upscale.pdf", size=a3_size, allow_upscale=True)

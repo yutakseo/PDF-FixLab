@@ -4,6 +4,21 @@ services:
       context: ./worker
       dockerfile: Dockerfile.worker
     container_name: pdf_worker
-    ports:
-      - "9000:9000"
     restart: unless-stopped
+    volumes:
+      - ./worker:/app
+    command: uvicorn worker_app:app --host 0.0.0.0 --port 9000 --reload  
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile.web
+    container_name: pdf_web
+    ports:
+      - "8000:8000"
+    depends_on:
+      - pdf_worker
+    restart: unless-stopped
+    volumes:
+      - ./web:/app
+    command: uvicorn web_app:app --host 0.0.0.0 --port 8000 --reload
