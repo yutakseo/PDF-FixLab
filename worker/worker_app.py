@@ -6,12 +6,12 @@ from pathlib import Path
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.responses import FileResponse, JSONResponse
 
-from .core import process_pdf
-from .source.resize import resize
-from .source.rotate import rotate
-from .source.deskew import deskew
-from .source.ocr_layer import add_ocr
-from .source.merge import merge
+
+from source.resize import resize
+from source.rotate import rotate
+from source.deskew import deskew
+from source.ocr_layer import add_ocr
+from source.merge import merge
 
 
 app = FastAPI(title="PDF Worker Service")

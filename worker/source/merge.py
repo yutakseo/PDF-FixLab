@@ -2,7 +2,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Iterable, List
 
-from pypdf import PdfReader, PdfWriter
+from PyPDF2 import PdfReader, PdfWriter
 
 
 def merge(pdf_paths: Iterable[str | Path], output_pdf: str | Path) -> None:
