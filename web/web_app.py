@@ -1,7 +1,7 @@
 # web/web_app.py
 from io import BytesIO
 
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import FastAPI, UploadFile, File, Form, Request
 from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles        
 from fastapi.templating import Jinja2Templates      
