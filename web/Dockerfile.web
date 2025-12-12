@@ -7,13 +7,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
+# web 디렉터리 전체를 컨테이너 /app 으로 복사
 COPY . .
 
+# FastAPI + 템플릿(Jinja2) + 파일 업로드 + httpx
 RUN pip install --no-cache-dir \
     fastapi \
     uvicorn[standard] \
     python-multipart \
-    httpx
+    httpx \
+    jinja2
 
 EXPOSE 8000
 

@@ -3,49 +3,23 @@ from io import BytesIO
 
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles        
+from fastapi.templating import Jinja2Templates      
 import httpx
 
 app = FastAPI(title="PDF Web Frontend")
 
+
+app.mount("/static", StaticFiles(directory="uiux/static"), name="static")
+templates = Jinja2Templates(directory="uiux/templates")
 WORKER_URL = "http://pdf_worker:9000/process"
 
 
+
 @app.get("/", response_class=HTMLResponse)
-async def index():
-    # 아주 간단한 업로드 폼
-    return """
-    <!doctype html>
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <title>PDF Fix Lab</title>
-      </head>
-      <body>
-        <h1>PDF 업로드</h1>
-        <form action="/upload" method="post" enctype="multipart/form-data">
-          <div>
-            <label>PDF 파일:</label>
-            <input type="file" name="file" accept="application/pdf" required>
-          </div>
-          <div>
-            <label>최대 너비 (pt):</label>
-            <input type="number" name="max_width" value="595">
-          </div>
-          <div>
-            <label>최대 높이 (pt):</label>
-            <input type="number" name="max_height" value="842">
-          </div>
-          <div>
-            <label>자동 회전:</label>
-            <input type="checkbox" name="auto_rotate" checked>
-          </div>
-          <div>
-            <button type="submit">업로드 & 변환</button>
-          </div>
-        </form>
-      </body>
-    </html>
-    """
+async def index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
 
 
 @app.post("/upload")
