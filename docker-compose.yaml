@@ -1,9 +1,9 @@
-
 services:
-  pdffix:
-    build: .
-    working_dir: /data
-    volumes:
-      - ./data:/data
-      - ./results:/results
-
+  pdf_worker:
+    build:
+      context: ./worker
+      dockerfile: Dockerfile.worker
+    container_name: pdf_worker
+    ports:
+      - "9000:9000"
+    restart: unless-stopped

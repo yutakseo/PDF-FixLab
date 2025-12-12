@@ -1,0 +1,24 @@
+# worker/Dockerfile.worker
+
+FROM python:3.12-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ghostscript qpdf libglib2.0-0 libgl1 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+
+COPY . .
+
+
+RUN pip install --no-cache-dir \
+    fastapi \
+    uvicorn[standard] \
+    PyPDF2 \
+    python-multipart
+
+EXPOSE 9000
+
+# /app 내부에 worker_app.py 가 있으므로 이렇게 실행
+CMD ["uvicorn", "worker_app:app", "--host", "0.0.0.0", "--port", "9000"]
